@@ -110,7 +110,7 @@ MemoryModel::MemoryModel(QWidget* parent)
 		update();
 	});
 
-	setRegion(0, 0x10000000, tr("All"));
+	setRegion(0, 0xFFFFFFFF, tr("All"));
 }
 
 void MemoryModel::setController(std::shared_ptr<CoreController> controller) {

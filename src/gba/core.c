@@ -56,7 +56,7 @@ static const struct mCoreChannelInfo _GBAAudioChannels[] = {
 };
 
 static const struct mCoreMemoryBlock _GBAMemoryBlocks[] = {
-	{ -1, "mem", "All", "All", 0, 0x10000000, 0x10000000, mCORE_MEMORY_VIRTUAL },
+	{ -1, "mem", "All", "All", 0, 0xFFFFFFFF, 0xFFFFFFFF, mCORE_MEMORY_VIRTUAL },
 	{ GBA_REGION_BIOS, "bios", "BIOS", "BIOS (16kiB)", GBA_BASE_BIOS, GBA_SIZE_BIOS, GBA_SIZE_BIOS, mCORE_MEMORY_READ | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_EWRAM, "wram", "EWRAM", "Working RAM (256kiB)", GBA_BASE_EWRAM, GBA_BASE_EWRAM + GBA_SIZE_EWRAM, GBA_SIZE_EWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_IWRAM, "iwram", "IWRAM", "Internal Working RAM (32kiB)", GBA_BASE_IWRAM, GBA_BASE_IWRAM + GBA_SIZE_IWRAM, GBA_SIZE_IWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
@@ -70,7 +70,7 @@ static const struct mCoreMemoryBlock _GBAMemoryBlocks[] = {
 };
 
 static const struct mCoreMemoryBlock _GBAMemoryBlocksSRAM[] = {
-	{ -1, "mem", "All", "All", 0, 0x10000000, 0x10000000, mCORE_MEMORY_VIRTUAL },
+	{ -1, "mem", "All", "All", 0, 0xFFFFFFFF, 0xFFFFFFFF, mCORE_MEMORY_VIRTUAL },
 	{ GBA_REGION_BIOS, "bios", "BIOS", "BIOS (16kiB)", GBA_BASE_BIOS, GBA_SIZE_BIOS, GBA_SIZE_BIOS, mCORE_MEMORY_READ | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_EWRAM, "wram", "EWRAM", "Working RAM (256kiB)", GBA_BASE_EWRAM, GBA_BASE_EWRAM + GBA_SIZE_EWRAM, GBA_SIZE_EWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_IWRAM, "iwram", "IWRAM", "Internal Working RAM (32kiB)", GBA_BASE_IWRAM, GBA_BASE_IWRAM + GBA_SIZE_IWRAM, GBA_SIZE_IWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
@@ -85,7 +85,7 @@ static const struct mCoreMemoryBlock _GBAMemoryBlocksSRAM[] = {
 };
 
 static const struct mCoreMemoryBlock _GBAMemoryBlocksSRAM512[] = {
-	{ -1, "mem", "All", "All", 0, 0x10000000, 0x10000000, mCORE_MEMORY_VIRTUAL },
+	{ -1, "mem", "All", "All", 0, 0xFFFFFFFF, 0xFFFFFFFF, mCORE_MEMORY_VIRTUAL },
 	{ GBA_REGION_BIOS, "bios", "BIOS", "BIOS (16kiB)", GBA_BASE_BIOS, GBA_SIZE_BIOS, GBA_SIZE_BIOS, mCORE_MEMORY_READ | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_EWRAM, "wram", "EWRAM", "Working RAM (256kiB)", GBA_BASE_EWRAM, GBA_BASE_EWRAM + GBA_SIZE_EWRAM, GBA_SIZE_EWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_IWRAM, "iwram", "IWRAM", "Internal Working RAM (32kiB)", GBA_BASE_IWRAM, GBA_BASE_IWRAM + GBA_SIZE_IWRAM, GBA_SIZE_IWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
@@ -100,7 +100,7 @@ static const struct mCoreMemoryBlock _GBAMemoryBlocksSRAM512[] = {
 };
 
 static const struct mCoreMemoryBlock _GBAMemoryBlocksFlash512[] = {
-	{ -1, "mem", "All", "All", 0, 0x10000000, 0x10000000, mCORE_MEMORY_VIRTUAL },
+	{ -1, "mem", "All", "All", 0, 0xFFFFFFFF, 0xFFFFFFFF, mCORE_MEMORY_VIRTUAL },
 	{ GBA_REGION_BIOS, "bios", "BIOS", "BIOS (16kiB)", GBA_BASE_BIOS, GBA_SIZE_BIOS, GBA_SIZE_BIOS, mCORE_MEMORY_READ | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_EWRAM, "wram", "EWRAM", "Working RAM (256kiB)", GBA_BASE_EWRAM, GBA_BASE_EWRAM + GBA_SIZE_EWRAM, GBA_SIZE_EWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_IWRAM, "iwram", "IWRAM", "Internal Working RAM (32kiB)", GBA_BASE_IWRAM, GBA_BASE_IWRAM + GBA_SIZE_IWRAM, GBA_SIZE_IWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
@@ -115,7 +115,7 @@ static const struct mCoreMemoryBlock _GBAMemoryBlocksFlash512[] = {
 };
 
 static const struct mCoreMemoryBlock _GBAMemoryBlocksFlash1M[] = {
-	{ -1, "mem", "All", "All", 0, 0x10000000, 0x10000000, mCORE_MEMORY_VIRTUAL },
+	{ -1, "mem", "All", "All", 0, 0xFFFFFFFF, 0xFFFFFFFF, mCORE_MEMORY_VIRTUAL },
 	{ GBA_REGION_BIOS, "bios", "BIOS", "BIOS (16kiB)", GBA_BASE_BIOS, GBA_SIZE_BIOS, GBA_SIZE_BIOS, mCORE_MEMORY_READ | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_EWRAM, "wram", "EWRAM", "Working RAM (256kiB)", GBA_BASE_EWRAM, GBA_BASE_EWRAM + GBA_SIZE_EWRAM, GBA_SIZE_EWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_IWRAM, "iwram", "IWRAM", "Internal Working RAM (32kiB)", GBA_BASE_IWRAM, GBA_BASE_IWRAM + GBA_SIZE_IWRAM, GBA_SIZE_IWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
@@ -130,7 +130,7 @@ static const struct mCoreMemoryBlock _GBAMemoryBlocksFlash1M[] = {
 };
 
 static const struct mCoreMemoryBlock _GBAMemoryBlocksEEPROM[] = {
-	{ -1, "mem", "All", "All", 0, 0x10000000, 0x10000000, mCORE_MEMORY_VIRTUAL },
+	{ -1, "mem", "All", "All", 0, 0xFFFFFFFF, 0xFFFFFFFF, mCORE_MEMORY_VIRTUAL },
 	{ GBA_REGION_BIOS, "bios", "BIOS", "BIOS (16kiB)", GBA_BASE_BIOS, GBA_SIZE_BIOS, GBA_SIZE_BIOS, mCORE_MEMORY_READ | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_EWRAM, "wram", "EWRAM", "Working RAM (256kiB)", GBA_BASE_EWRAM, GBA_BASE_EWRAM + GBA_SIZE_EWRAM, GBA_SIZE_EWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_IWRAM, "iwram", "IWRAM", "Internal Working RAM (32kiB)", GBA_BASE_IWRAM, GBA_BASE_IWRAM + GBA_SIZE_IWRAM, GBA_SIZE_IWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
@@ -145,7 +145,7 @@ static const struct mCoreMemoryBlock _GBAMemoryBlocksEEPROM[] = {
 };
 
 static const struct mCoreMemoryBlock _GBAMemoryBlocksEEPROM512[] = {
-	{ -1, "mem", "All", "All", 0, 0x10000000, 0x10000000, mCORE_MEMORY_VIRTUAL },
+	{ -1, "mem", "All", "All", 0, 0xFFFFFFFF, 0xFFFFFFFF, mCORE_MEMORY_VIRTUAL },
 	{ GBA_REGION_BIOS, "bios", "BIOS", "BIOS (16kiB)", GBA_BASE_BIOS, GBA_SIZE_BIOS, GBA_SIZE_BIOS, mCORE_MEMORY_READ | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_EWRAM, "wram", "EWRAM", "Working RAM (256kiB)", GBA_BASE_EWRAM, GBA_BASE_EWRAM + GBA_SIZE_EWRAM, GBA_SIZE_EWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
 	{ GBA_REGION_IWRAM, "iwram", "IWRAM", "Internal Working RAM (32kiB)", GBA_BASE_IWRAM, GBA_BASE_IWRAM + GBA_SIZE_IWRAM, GBA_SIZE_IWRAM, mCORE_MEMORY_RW | mCORE_MEMORY_MAPPED },
