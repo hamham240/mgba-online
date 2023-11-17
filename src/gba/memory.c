@@ -98,6 +98,9 @@ void GBAMemoryInit(struct GBA* gba) {
 	gba->memory.ereader.p = gba;
 	gba->memory.ereader.dots = NULL;
 	memset(gba->memory.ereader.cards, 0, sizeof(gba->memory.ereader.cards));
+
+	gba->memory.generalBuffer = malloc(sizeof(uint8_t) * GBA_SIZE_GENERAL_BUFFER);
+	memset(gba->memory.generalBuffer, 0, GBA_SIZE_GENERAL_BUFFER * sizeof(uint8_t));
 }
 
 void GBAMemoryDeinit(struct GBA* gba) {
@@ -110,6 +113,9 @@ void GBAMemoryDeinit(struct GBA* gba) {
 	}
 	if (gba->memory.agbPrintBufferBackup) {
 		mappedMemoryFree(gba->memory.agbPrintBufferBackup, GBA_SIZE_AGB_PRINT);
+	}
+	if (gba->memory.generalBuffer) {
+		free(gba->memory.generalBuffer);
 	}
 
 	GBACartEReaderDeinit(&gba->memory.ereader);
@@ -136,6 +142,14 @@ void GBAMemoryReset(struct GBA* gba) {
 	if (!gba->memory.wram || !gba->memory.iwram) {
 		GBAMemoryDeinit(gba);
 		mLOG(GBA_MEM, FATAL, "Could not map memory");
+	}
+
+	if (gba->memory.generalBuffer) {
+		memset(gba->memory.generalBuffer, 0, GBA_SIZE_GENERAL_BUFFER * sizeof(uint8_t));
+	}
+	else
+	{
+		mLOG(GBA_MEM, FATAL, "Could not reset general buffer as it does not exist");
 	}
 
 	GBADMAReset(gba);
@@ -499,6 +513,17 @@ uint32_t GBALoad32(struct ARMCore* cpu, uint32_t address, int* cycleCounter) {
 	case GBA_REGION_SRAM_MIRROR:
 		LOAD_SRAM;
 		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER - 3))
+		{
+			value = *((uint32_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]);
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Reading 32 bits from unallocated unused address: 0x%08X", address);
+			value = 0;
+		}
+		break;
 	default:
 		mLOG(GBA_MEM, GAME_ERROR, "Bad memory Load32: 0x%08X", address);
 		LOAD_BAD;
@@ -614,6 +639,17 @@ uint32_t GBALoad16(struct ARMCore* cpu, uint32_t address, int* cycleCounter) {
 		value = GBALoad8(cpu, address, 0);
 		value |= value << 8;
 		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER - 1))
+		{
+			value = *((uint16_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]);
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Reading 16 bits from unallocated unused address: 0x%08X", address);
+			value = 0;
+		}
+		break;
 	default:
 		mLOG(GBA_MEM, GAME_ERROR, "Bad memory Load16: 0x%08X", address);
 		value = (GBALoadBad(cpu) >> ((address & 2) * 8)) & 0xFFFF;
@@ -725,6 +761,17 @@ uint32_t GBALoad8(struct ARMCore* cpu, uint32_t address, int* cycleCounter) {
 		}
 		value &= 0xFF;
 		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER))
+		{
+			value = memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER];
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Reading 8 bits from unallocated unused address: 0x%08X", address);
+			value = 0;
+		}
+		break;
 	default:
 		mLOG(GBA_MEM, GAME_ERROR, "Bad memory Load8: 0x%08x", address);
 		value = (GBALoadBad(cpu) >> ((address & 3) * 8)) & 0xFF;
@@ -811,6 +858,17 @@ uint32_t GBALoad8(struct ARMCore* cpu, uint32_t address, int* cycleCounter) {
 		GBAStore8(cpu, address | 3, value, cycleCounter); \
 	}
 
+#define STORE_GENERAL_BUFFER \
+	if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER - 3))\
+	{\
+		*((uint32_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]) = value;\
+	}\
+	else\
+	{\
+		mLOG(GBA_MEM, GAME_ERROR, "Writing 32 bits to unallocated unused address: 0x%08X", address);\
+	}
+
+
 #define STORE_BAD \
 	mLOG(GBA_MEM, GAME_ERROR, "Bad memory Store32: 0x%08X", address);
 
@@ -851,6 +909,16 @@ void GBAStore32(struct ARMCore* cpu, uint32_t address, int32_t value, int* cycle
 	case GBA_REGION_SRAM:
 	case GBA_REGION_SRAM_MIRROR:
 		STORE_SRAM;
+		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER - 3))
+		{
+			*((uint32_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]) = value;
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Writing 32 bits to unallocated unused address: 0x%08X", address);
+		}
 		break;
 	default:
 		STORE_BAD;
@@ -994,6 +1062,16 @@ void GBAStore16(struct ARMCore* cpu, uint32_t address, int16_t value, int* cycle
 		GBAStore8(cpu, address, value, cycleCounter);
 		GBAStore8(cpu, address | 1, value, cycleCounter);
 		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER - 1))
+		{
+			*((uint16_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]) = value;
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Writing 16 bits to unallocated unused address: 0x%08X", address);
+		}
+		break;
 	default:
 		mLOG(GBA_MEM, GAME_ERROR, "Bad memory Store16: 0x%08X", address);
 		break;
@@ -1080,6 +1158,16 @@ void GBAStore8(struct ARMCore* cpu, uint32_t address, int8_t value, int* cycleCo
 		}
 		wait = memory->waitstatesNonseq16[GBA_REGION_SRAM];
 		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER))
+		{
+			memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER] = value;
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Writing 8 bits to unallocated unused address: 0x%08X", address);
+		}
+		break;
 	default:
 		mLOG(GBA_MEM, GAME_ERROR, "Bad memory Store8: 0x%08X", address);
 		break;
@@ -1115,6 +1203,7 @@ uint32_t GBAView32(struct ARMCore* cpu, uint32_t address) {
 	case GBA_REGION_ROM1_EX:
 	case GBA_REGION_ROM2:
 	case GBA_REGION_ROM2_EX:
+	case GBA_REGION_GENERAL_BUFFER:
 		value = GBALoad32(cpu, address, 0);
 		break;
 	case GBA_REGION_IO:
@@ -1156,6 +1245,7 @@ uint16_t GBAView16(struct ARMCore* cpu, uint32_t address) {
 	case GBA_REGION_ROM1_EX:
 	case GBA_REGION_ROM2:
 	case GBA_REGION_ROM2_EX:
+	case GBA_REGION_GENERAL_BUFFER:
 		value = GBALoad16(cpu, address, 0);
 		break;
 	case GBA_REGION_IO:
@@ -1191,6 +1281,7 @@ uint8_t GBAView8(struct ARMCore* cpu, uint32_t address) {
 	case GBA_REGION_ROM2:
 	case GBA_REGION_ROM2_EX:
 	case GBA_REGION_SRAM:
+	case GBA_REGION_GENERAL_BUFFER:
 		value = GBALoad8(cpu, address, 0);
 		break;
 	case GBA_REGION_IO:
@@ -1270,8 +1361,19 @@ void GBAPatch32(struct ARMCore* cpu, uint32_t address, int32_t value, int32_t* o
 			mLOG(GBA_MEM, GAME_ERROR, "Writing to non-existent SRAM: 0x%08X", address);
 		}
 		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER - 3))
+		{
+			oldValue = *((int32_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]);
+			*((int32_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]) = value;
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Patching 32 bits from unallocated unused address: 0x%08X", address);
+		}
+		break;
 	default:
-		mLOG(GBA_MEM, WARN, "Bad memory Patch16: 0x%08X", address);
+		mLOG(GBA_MEM, WARN, "Bad memory Patch32: 0x%08X", address);
 		break;
 	}
 	if (old) {
@@ -1340,6 +1442,17 @@ void GBAPatch16(struct ARMCore* cpu, uint32_t address, int16_t value, int16_t* o
 			mLOG(GBA_MEM, GAME_ERROR, "Writing to non-existent SRAM: 0x%08X", address);
 		}
 		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER - 1))
+		{
+			oldValue = *((int16_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]);
+			*((int16_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]) = value;
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Patching 16 bits from unallocated unused address: 0x%08X", address);
+		}
+		break;
 	default:
 		mLOG(GBA_MEM, WARN, "Bad memory Patch16: 0x%08X", address);
 		break;
@@ -1396,6 +1509,17 @@ void GBAPatch8(struct ARMCore* cpu, uint32_t address, int8_t value, int8_t* old)
 			((int8_t*) memory->savedata.data)[address & (GBA_SIZE_SRAM - 1)] = value;
 		} else {
 			mLOG(GBA_MEM, GAME_ERROR, "Writing to non-existent SRAM: 0x%08X", address);
+		}
+		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER))
+		{
+			oldValue = *((int8_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]);
+			*((int8_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]) = value;
+		}
+		else
+		{
+			mLOG(GBA_MEM, GAME_ERROR, "Patching 8 bits from unallocated unused address: 0x%08X", address);
 		}
 		break;
 	default:
@@ -1619,6 +1743,9 @@ uint32_t GBAStoreMultiple(struct ARMCore* cpu, uint32_t address, int mask, enum 
 	case GBA_REGION_SRAM:
 	case GBA_REGION_SRAM_MIRROR:
 		STM_LOOP(STORE_SRAM);
+		break;
+	case GBA_REGION_GENERAL_BUFFER:
+		STM_LOOP(STORE_GENERAL_BUFFER);
 		break;
 	default:
 		STM_LOOP(STORE_BAD);

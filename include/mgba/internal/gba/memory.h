@@ -35,7 +35,8 @@ enum GBAMemoryRegion {
 	GBA_REGION_ROM2 = 0xC,
 	GBA_REGION_ROM2_EX = 0xD,
 	GBA_REGION_SRAM = 0xE,
-	GBA_REGION_SRAM_MIRROR = 0xF
+	GBA_REGION_SRAM_MIRROR = 0xF,
+	GBA_REGION_GENERAL_BUFFER = 0x10
 };
 
 enum GBAMemoryBase {
@@ -53,7 +54,8 @@ enum GBAMemoryBase {
 	GBA_BASE_ROM2 = 0x0C000000,
 	GBA_BASE_ROM2_EX = 0x0D000000,
 	GBA_BASE_SRAM = 0x0E000000,
-	GBA_BASE_SRAM_MIRROR = 0x0F000000
+	GBA_BASE_SRAM_MIRROR = 0x0F000000,
+	GBA_BASE_GENERAL_BUFFER = 0x10000000
 };
 
 enum {
@@ -74,7 +76,9 @@ enum {
 	GBA_SIZE_EEPROM = 0x00002000,
 	GBA_SIZE_EEPROM512 = 0x00000200,
 
-	GBA_SIZE_AGB_PRINT = 0x10000
+	GBA_SIZE_AGB_PRINT = 0x10000,
+
+	GBA_SIZE_GENERAL_BUFFER = 0x00F00000
 };
 
 enum {
@@ -105,6 +109,8 @@ struct GBAMemory {
 	uint32_t* iwram;
 	uint32_t* rom;
 	uint16_t io[512];
+
+	uint8_t* generalBuffer;
 
 	struct GBACartridgeHardware hw;
 	struct GBASavedata savedata;
