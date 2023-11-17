@@ -1786,6 +1786,9 @@ void Window::setupMenu(QMenuBar* menubar) {
 		action->setEnabled(false);
 	}
 
+	m_actions.addMenu(tr("&Multiplayer"), "multiplayer");
+	m_actions.addAction(tr("Start Server"), "startserver", [](){}, "multiplayer");
+
 	m_shortcutController->rebuildItems();
 	m_actions.rebuildMenu(menuBar(), this, *m_shortcutController);
 }
