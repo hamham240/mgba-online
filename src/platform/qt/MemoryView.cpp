@@ -148,8 +148,11 @@ MemoryView::MemoryView(std::shared_ptr<CoreController> controller, QWidget* pare
 		m_sintValidator.setWidth(4);
 		m_uintValidator.setWidth(4);
 	});
-	connect(m_ui.setAddress, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-	        this, static_cast<void (MemoryView::*)(uint32_t)>(&MemoryView::jumpToAddress));
+	connect(m_ui.setAddress, &QLineEdit::returnPressed, this, [this]() {
+		std::string lineText = m_ui.setAddress->text().toStdString();
+		uint32_t address = static_cast<uint32_t>(std::stoull(lineText, nullptr, 0));
+		this->jumpToAddress(address);
+	});
 	connect(m_ui.hexfield, &MemoryModel::selectionChanged, this, &MemoryView::updateSelection);
 	connect(m_ui.saveRange, &QAbstractButton::clicked, this, &MemoryView::saveRange);
 
