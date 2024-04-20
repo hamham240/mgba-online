@@ -12,6 +12,7 @@
 #include <QMainWindow>
 #include <QTimer>
 
+#include <atomic>
 #include <functional>
 #include <memory>
 
@@ -195,6 +196,10 @@ private:
 	std::unique_ptr<QGBA::Display> m_display;
 	QSize m_initialSize;
 	int m_savedScale;
+
+	std::thread m_server_thread;
+	std::atomic_bool m_stop_token;
+	std::thread m_client_thread;
 
 	// TODO: Move these to a new class
 	ActionMapper m_actions;

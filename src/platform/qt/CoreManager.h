@@ -24,6 +24,7 @@ public:
 	void setConfig(const mCoreConfig*);
 	void setMultiplayerController(MultiplayerController*);
 	void setPreload(bool preload) { m_preload = preload; }
+	bool coreIsGba() { return m_core_is_gba; }
 
 public slots:
 	CoreController* loadGame(const QString& path);
@@ -37,6 +38,7 @@ private:
 	const mCoreConfig* m_config = nullptr;
 	MultiplayerController* m_multiplayer = nullptr;
 	bool m_preload = false;
+	bool m_core_is_gba = false;
 };
 
 }

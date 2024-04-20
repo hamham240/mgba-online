@@ -69,6 +69,9 @@
 #include "DiscordCoordinator.h"
 #endif
 
+#include "Server.h"
+#include "Client.h"
+
 #include <mgba/core/version.h>
 #include <mgba/core/cheats.h>
 #ifdef M_CORE_GB
@@ -90,6 +93,7 @@ using namespace QGBA;
 Window::Window(CoreManager* manager, ConfigController* config, int playerId, QWidget* parent)
 	: QMainWindow(parent)
 	, m_manager(manager)
+	, m_stop_token(true)
 	, m_logView(new LogView(&m_log, this))
 	, m_screenWidget(new WindowBackground())
 	, m_config(config)
@@ -1787,7 +1791,74 @@ void Window::setupMenu(QMenuBar* menubar) {
 	}
 
 	m_actions.addMenu(tr("&Multiplayer"), "multiplayer");
-	m_actions.addAction(tr("Start Server"), "startserver", [](){}, "multiplayer");
+	m_actions.addAction(tr("Start Server"), "startserver", [this]() {
+		if (!m_manager->coreIsGba()) {
+			if (m_controller && m_controller->hasStarted()) {
+				QMessageBox::critical( 
+				  this, 
+				  tr("MGBA Online"), 
+				  tr("MGBA Online servers currently only support GBA games."));	
+			}
+			else {
+				QMessageBox::critical( 
+				  this, 
+				  tr("MGBA Online"), 
+				  tr("A game must be started in order to start a server."));	
+			}
+		}
+		else {
+			GBA* gba_board = ((GBA*) m_controller->thread()->core->board);
+			std::uint8_t* general_buffer = gba_board->memory.generalBuffer;
+
+			m_server_thread = std::thread([general_buffer, this]() {
+				try {
+					this->m_stop_token = false;
+					online::Server server(52930, general_buffer, std::ref(this->m_stop_token));
+					server.exec();
+				}
+				catch(const std::exception& exc) {
+					QMessageBox::critical( 
+					  this, 
+					  tr("MGBA Online"), 
+					  tr(exc.what()));	
+				}
+			} );
+		}
+	}, "multiplayer");
+	m_actions.addAction(tr("Start Client"), "startclient", [this]() {
+		if (!m_manager->coreIsGba()) {
+			if (m_controller && m_controller->hasStarted()) {
+				QMessageBox::critical( 
+				  this, 
+				  tr("MGBA Online"), 
+				  tr("MGBA Online clients currently only support GBA games."));	
+			}
+			else {
+				QMessageBox::critical( 
+				  this, 
+				  tr("MGBA Online"), 
+				  tr("A game must be started in order to start a client."));	
+			}
+		}
+		else {
+			GBA* gba_board = ((GBA*) m_controller->thread()->core->board);
+			std::uint8_t* general_buffer = gba_board->memory.generalBuffer;
+
+			m_client_thread = std::thread([general_buffer, this]() {
+				try {
+					this->m_stop_token = false;
+					online::Client client(52930, general_buffer, std::ref(this->m_stop_token));
+					client.exec();
+				}
+				catch(...) {
+					QMessageBox::critical( 
+					  this, 
+					  tr("MGBA Online"), 
+					  tr("Connection with server crashed unexpectedly."));	
+				}
+			} );
+		}
+	}, "multiplayer");
 
 	m_shortcutController->rebuildItems();
 	m_actions.rebuildMenu(menuBar(), this, *m_shortcutController);

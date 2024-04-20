@@ -1066,6 +1066,7 @@ void GBAStore16(struct ARMCore* cpu, uint32_t address, int16_t value, int* cycle
 		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER - 1))
 		{
 			*((uint16_t*)&memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER]) = value;
+			mLOG(GBA_MEM, INFO, "Writing 16 bits with value %u to address: 0x%08X", value,  address);
 		}
 		else
 		{
@@ -1162,6 +1163,7 @@ void GBAStore8(struct ARMCore* cpu, uint32_t address, int8_t value, int* cycleCo
 		if (address >= GBA_BASE_GENERAL_BUFFER && address < (GBA_BASE_GENERAL_BUFFER + GBA_SIZE_GENERAL_BUFFER))
 		{
 			memory->generalBuffer[address - GBA_BASE_GENERAL_BUFFER] = value;
+			mLOG(GBA_MEM, INFO, "Writing 8 bits with value %u to address: 0x%08X", value,  address);
 		}
 		else
 		{

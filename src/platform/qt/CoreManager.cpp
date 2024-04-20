@@ -91,6 +91,8 @@ CoreController* CoreManager::loadGame(VFile* vf, const QString& path, const QStr
 		return nullptr;
 	}
 
+	m_core_is_gba = GBAIsROM(vf);
+
 	core->init(core);
 	mCoreInitConfig(core, nullptr);
 
