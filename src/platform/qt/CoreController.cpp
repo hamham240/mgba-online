@@ -9,6 +9,7 @@
 #include "InputController.h"
 #include "LogController.h"
 #include "MultiplayerController.h"
+#include "OnlineLink.h"
 #include "Override.h"
 
 #include <QAbstractButton>
@@ -118,6 +119,16 @@ CoreController::CoreController(mCore* core, QObject* parent)
 			controller->m_autosaveCounter = 0;
 		}
 		++controller->m_autosaveCounter;
+
+#ifdef M_CORE_GBA
+		if (context->core->platform(context->core) == mPLATFORM_GBA) {
+			QMutexLocker locker(&controller->m_onlineLinkMutex);
+			if (controller->m_onlineLink) {
+				GBA* gba = static_cast<GBA*>(context->core->board);
+				controller->m_onlineLink->pump(gba->memory.generalBuffer);
+			}
+		}
+#endif
 
 		controller->finishFrame();
 	};
@@ -509,6 +520,11 @@ void CoreController::frameAdvance() {
 	if (isPaused()) {
 		mCoreThreadUnpause(&m_threadContext);
 	}
+}
+
+void CoreController::setOnlineLink(std::shared_ptr<online::OnlineLink> link) {
+	QMutexLocker locker(&m_onlineLinkMutex);
+	m_onlineLink = std::move(link);
 }
 
 void CoreController::addFrameAction(std::function<void ()> action) {

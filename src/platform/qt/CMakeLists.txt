@@ -91,7 +91,6 @@ set(SOURCE_FILES
 	CheatsModel.cpp
 	CheatsView.cpp
 	CheckBoxDelegate.cpp
-	Client.cpp
 	ConfigController.cpp
 	ColorPicker.cpp
 	CoreManager.cpp
@@ -133,6 +132,7 @@ set(SOURCE_FILES
 	MessagePainter.cpp
 	MultiplayerController.cpp
 	ObjView.cpp
+	OnlineLink.cpp
 	OpenGLBug.cpp
 	OverrideView.cpp
 	PaletteView.cpp
@@ -144,7 +144,6 @@ set(SOURCE_FILES
 	SaveConverter.cpp
 	SavestateButton.cpp
 	SensorView.cpp
-	Server.cpp
 	SettingsView.cpp
 	ShaderSelector.cpp
 	ShortcutController.cpp

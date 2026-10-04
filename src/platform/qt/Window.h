@@ -49,6 +49,10 @@ class ShortcutController;
 class VideoView;
 class WindowBackground;
 
+namespace online {
+class OnlineLink;
+}
+
 class Window : public QMainWindow {
 Q_OBJECT
 
@@ -164,6 +168,7 @@ private:
 
 	void setupMenu(QMenuBar*);
 	void setupOptions();
+	void startOnline(bool host);
 	void openStateWindow(LoadSave);
 
 	void attachWidget(QWidget* widget);
@@ -197,9 +202,7 @@ private:
 	QSize m_initialSize;
 	int m_savedScale;
 
-	std::thread m_server_thread;
-	std::atomic_bool m_stop_token;
-	std::thread m_client_thread;
+	std::shared_ptr<online::OnlineLink> m_onlineLink;
 
 	// TODO: Move these to a new class
 	ActionMapper m_actions;

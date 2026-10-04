@@ -43,6 +43,10 @@ class LogController;
 class MultiplayerController;
 class Override;
 
+namespace online {
+class OnlineLink;
+}
+
 class CoreController : public QObject {
 Q_OBJECT
 
@@ -131,6 +135,7 @@ public:
 
 	void setInputController(InputController*);
 	void setLogger(LogController*);
+	void setOnlineLink(std::shared_ptr<online::OnlineLink>);
 
 	bool audioSync() const { return m_audioSync; }
 	bool videoSync() const { return m_videoSync; }
@@ -281,6 +286,9 @@ private:
 #else
 	QMutex m_actionMutex{QMutex::Recursive};
 #endif
+	std::shared_ptr<online::OnlineLink> m_onlineLink;
+	QMutex m_onlineLinkMutex;
+
 	int m_moreFrames = -1;
 	QMutex m_bufferMutex;
 
