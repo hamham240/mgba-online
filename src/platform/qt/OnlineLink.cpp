@@ -169,6 +169,7 @@ void OnlineLink::pump(std::uint8_t* buffer) {
 	buffer[0] = connected;
 	buffer[PIPE_CONNECTED] = connected;
 	buffer[PIPE_PLAYER_ID] = m_role == Role::Host ? 0 : 1;
+	write32(buffer, PIPE_MAGIC, PIPE_MAGIC_VALUE);
 
 	if (!connected) {
 		return;

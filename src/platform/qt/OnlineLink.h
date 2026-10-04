@@ -29,6 +29,7 @@ namespace online {
 //   PIPE + 0x08      u32  outbox read index  (emulator)
 //   PIPE + 0x0C      u32  inbox write index  (emulator)
 //   PIPE + 0x10      u32  inbox read index   (ROM)
+//   PIPE + 0x14      u32  magic "MGBO", so the ROM can tell it is running on mgba-online
 //   PIPE + 0x100          outbox ring
 //   PIPE + 0x100 + RING   inbox ring
 //
@@ -47,6 +48,8 @@ constexpr std::size_t PIPE_OUT_WRITE = PIPE_OFFSET + 0x04;
 constexpr std::size_t PIPE_OUT_READ = PIPE_OFFSET + 0x08;
 constexpr std::size_t PIPE_IN_WRITE = PIPE_OFFSET + 0x0C;
 constexpr std::size_t PIPE_IN_READ = PIPE_OFFSET + 0x10;
+constexpr std::size_t PIPE_MAGIC = PIPE_OFFSET + 0x14;
+constexpr std::uint32_t PIPE_MAGIC_VALUE = 0x4F42474D;
 constexpr std::size_t PIPE_RING_SIZE = 0x4000;
 constexpr std::size_t PIPE_OUTBOX = PIPE_OFFSET + 0x100;
 constexpr std::size_t PIPE_INBOX = PIPE_OUTBOX + PIPE_RING_SIZE;
