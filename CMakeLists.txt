@@ -780,8 +780,9 @@ if (USE_DISCORD_RPC)
 endif()
 
 if (USE_ASIO)
+	find_path(ASIO_INCLUDE_DIR asio.hpp REQUIRED)
 	list(APPEND FEATURES ASIO)
-	include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/asio/asio/include)
+	include_directories(AFTER ${ASIO_INCLUDE_DIR})
 endif()
 
 if(ENABLE_SCRIPTING)
